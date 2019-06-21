@@ -22,15 +22,13 @@ function apiSearch(event) {
                 let nameItem = item.name || item.title;
                 // дата выхода фильма или первой серии
                 let dateItem = item.first_air_date || item.release_date || '"нет даты"';
-                nameItem = nameItem + " (" + dateItem + ")";
-                //заглушка вместо картинки
-                const Poster = './iconmonstr-frown-thin-240.png';
+                nameItem = nameItem + " / " + dateItem;
                 //1 вариант
                 //inner += '<div class="col-12 col-md-4 col-xl-3">' + nameItem + '</div>';
-                //2 вариант
+                //2 вариант (с картинками)
                 inner += `
                 <div class="col-12 col-md-4 col-xl-3 item">
-                <img src="${urlPoster + item.poster_path}" alt="${Poster}">
+                <img src="${urlPoster + item.poster_path}" onerror="this.src='./iconmonstr-frown-thin-240.png'" alt="${nameItem}">
                     <h5>${nameItem}</h5>
                 </div>
                 `;
