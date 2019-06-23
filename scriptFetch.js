@@ -93,6 +93,14 @@ function showFullInfo() {
         })
         .then((output) => {
             console.log(output);
+            let nameGenRes = output.genres.map(function(item){
+
+                if (item.name.toLowerCase() == 'нф и фэнтези') {
+                    return 'научная фантастика и фэнтези';
+                }
+                return ' ' + item.name.toLowerCase();
+            });
+
             movie.innerHTML = `
             <h4 class="col-12 text-center text-info">${output.name || output.title}</h4>
             <div class="col-4">
@@ -102,13 +110,15 @@ function showFullInfo() {
             </div>
             <div class="col-8">
                 <p> Рейтинг: ${output.vote_average}</p>
-                <p> Статус: ${output.status == 'Ended' ? 'Съемки завершены' : 'Вышел в прокат'}</p>
+                <p> Статус: ${output.status == 'Ended' ? 'съемки завершены' : 'вышел в прокат'}</p>
                 <p> Дата премьеры: ${output.first_air_date || output.release_date}</p>
 
-                ${output.last_episode_to_air ? `<p>Всего ${output.number_of_episodes} сезонов, в последнем сезоне вышло ${output.last_episode_to_air.episode_number} серий</p>` : ''}
+                ${output.runtime ? `<p>Продолжительность: ${output.runtime} мин.</p>` : ''}
 
+                ${output.number_of_seasons ? `<p>Всего сезонов: ${output.number_of_seasons}<br>Вышло серий в последнем сезоне: ${output.last_episode_to_air.episode_number}</p>` : ''}
+
+                <p> Жанр: ${nameGenRes}</p>
                 <p> Описание: ${output.overview}</p>
-                
                 <div class='youtube'></div>
             </div>
             `;
