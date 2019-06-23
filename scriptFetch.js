@@ -33,8 +33,8 @@ function apiSearch(event) {
             output.results.forEach(function (item) {
                 let nameItem = item.name || item.title;
                 // дата выхода фильма или первой серии
-                let dateItem = item.first_air_date || item.release_date || '"нет даты"';
-                nameItem = nameItem + " / " + dateItem;
+                //let dateItem = item.first_air_date || item.release_date || '"нет даты"';
+                //nameItem = nameItem + " / " + dateItem;
                 let dataInfo = '';
 
                 if (item.media_type !== 'person') dataInfo = `data-id="${item.id}" data-type="${item.media_type}"`;
@@ -46,7 +46,7 @@ function apiSearch(event) {
                 //3 вариант (с картинками)
                 inner += `
                 <div class="col-12 col-md-6 col-xl-3 item">
-                    <img src="${urlPoster + item.poster_path}" class="img_poster" onerror="this.src='./img/poster.jpg'" alt="${nameItem}" ${dataInfo}>
+                    <img src="${urlPoster + item.poster_path}" class="img_poster" onerror="this.src='./img/noposter.png'" alt="${nameItem}" ${dataInfo}>
                     <h5>${nameItem}</h5>
                 </div>
                 `;
@@ -91,25 +91,30 @@ function showFullInfo() {
 
             return value.json();
         })
-        .then(function (output) {
+        .then((output) => {
             console.log(output);
             movie.innerHTML = `
             <h4 class="col-12 text-center text-info">${output.name || output.title}</h4>
             <div class="col-4">
-                <img src="${urlPoster + output.poster_path}" onerror="this.src='./img/poster.jpg'" alt="${output.name || output.title}">
+                <img src="${urlPoster + output.poster_path}" onerror="this.src='./img/noposter.png'" alt="${output.name || output.title}">
                 ${output.homepage ? `<p class='text-center'><a href="${output.homepage}" target="_blank">Официальный сайт</a></p>` : ''}
                 ${output.imdb_id ? `<p class='text-center'><a href="https://www.imdb.com/title/${output.imdb_id}" target="_blank">Сайт IMDB.com</a></p>` : ''}
             </div>
             <div class="col-8">
                 <p> Рейтинг: ${output.vote_average}</p>
-                <p> Статус: ${output.status}</p>
-                <p> Премьера: ${output.first_air_date || output.release_date}</p>
+                <p> Статус: ${output.status == 'Ended' ? 'Съемки завершены' : 'Вышел в прокат'}</p>
+                <p> Дата премьеры: ${output.first_air_date || output.release_date}</p>
 
-                ${output.last_episode_to_air ? `<p>${output.number_of_episodes} сезонов ${output.last_episode_to_air.episode_number} серий вышло</p>` : ''}
+                ${output.last_episode_to_air ? `<p>Всего ${output.number_of_episodes} сезонов, в последнем сезоне вышло ${output.last_episode_to_air.episode_number} серий</p>` : ''}
 
                 <p> Описание: ${output.overview}</p>
+                
+                <div class='youtube'></div>
             </div>
             `;
+
+            getVideo(this.dataset.type, this.dataset.id);
+
         })
         .catch(function (reason) {
             movie.innerHTML = 'Упс, что-то пошло не так!';
@@ -137,12 +142,12 @@ document.addEventListener('DOMContentLoaded', function () {
             output.results.forEach(function (item) {
                 let nameItem = item.name || item.title;
                 let mediaType = item.title ? 'movie' : 'tv';
-                let dateItem = item.first_air_date || item.release_date || '"нет даты"';
-                nameItem = nameItem + " / " + dateItem;
+                //let dateItem = item.first_air_date || item.release_date || '"нет даты"';
+                //nameItem = nameItem + " / " + dateItem;
                 let dataInfo = `data-id="${item.id}" data-type="${mediaType}"`;
                 inner += `
                 <div class="col-12 col-md-6 col-xl-3 item">
-                    <img src="${urlPoster + item.poster_path}" class="img_poster" onerror="this.src='./img/poster.jpg'" alt="${nameItem}" ${dataInfo}>
+                    <img src="${urlPoster + item.poster_path}" class="img_poster" onerror="this.src='./img/noposter.png'" alt="${nameItem}" ${dataInfo}>
                     <h5>${nameItem}</h5>
                 </div>
                 `;
@@ -156,3 +161,34 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error(reason || reason.status);
         });
 })
+
+function getVideo(type, id) {
+    let youtube = movie.querySelector('.youtube');
+
+    fetch(`https://api.themoviedb.org/3/${type}/${id}/videos?api_key=137d6d0dd08068a1b4f6f19de86001d6&language=ru-RU`)
+        .then((value) => {
+
+            if (value.status !== 200) {
+                return Promise.reject(new Error(value.status));
+            }
+
+            return value.json();
+        })
+        .then((output) => {
+            let videoFrame = '<h5 class="text-info">Трейлеры</h5>';
+            
+            if(output.results.length === 0){
+                videoFrame = '<p>К сожалению видео отсутствует</p>';
+            }
+
+            output.results.forEach((item) => {
+                videoFrame += '<iframe width="711" height="400" src="https://www.youtube.com/embed/' + item.key + '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+            });
+
+            youtube.innerHTML = videoFrame;
+        })
+        .catch((reason) => {
+            youtube.innerHTML = 'Видео отсутствует!';
+            console.error(reason || reason.status);
+        });
+}
