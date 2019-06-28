@@ -12,7 +12,7 @@ function apiSearch(event) {
     }
 
     const server = 'https://api.themoviedb.org/3/search/multi?api_key=137d6d0dd08068a1b4f6f19de86001d6&language=ru-RU&query=' + searchText;
-    movie.innerHTML = '<div class="spinner"></div>';
+    movie.innerHTML = '<div class="spinner"><img src="img/film-reel.png" alt="loading movies"></div>';
 
     fetch(server)
         .then(function (value) {
