@@ -100,6 +100,9 @@ function showFullInfo() {
                 }
                 return ' ' + item.name.toLowerCase();
             });
+            let nameProduction = output.production_companies.map(function(item){
+                return ' ' + item.name;
+            });
 
             movie.innerHTML = `
             <h4 class="col-12 text-center text-info">${output.name || output.title}</h4>
@@ -119,6 +122,7 @@ function showFullInfo() {
 
                 <p> Жанр: ${nameGenRes}</p>
                 <p> Описание: ${output.overview}</p>
+                <p> Производство: ${nameProduction}</p>
                 <div class='youtube'></div>
             </div>
             `;
