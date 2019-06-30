@@ -118,7 +118,7 @@ function showFullInfo() {
 
                 ${output.runtime ? `<p>Продолжительность: ${output.runtime} мин.</p>` : ''}
 
-                ${output.number_of_seasons ? `<p>Всего сезонов: ${output.number_of_seasons}<br>Вышло серий в последнем сезоне: ${output.last_episode_to_air.episode_number}</p>` : ''}
+                ${output.number_of_seasons ? `<p>Всего сезонов: ${output.number_of_seasons}, всего серий: ${output.number_of_episodes}<br>Вышло серий в последнем сезоне: ${output.last_episode_to_air.episode_number}</p>` : ''}
 
                 <p> Жанр: ${nameGenRes}</p>
                 <p> Описание: ${output.overview}</p>
